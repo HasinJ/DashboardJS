@@ -1,0 +1,265 @@
+<?php
+
+//files required 
+
+include_once('connection.php'); //connection credentials
+
+//hello world
+$hi = "hello";
+echo "$hi <br>" ;
+
+
+
+//database connection
+$dsn = 'mysql:dbname=' . DB_NAME . ';host=' . DB_HOST;
+try
+{
+$pdo = new PDO($dsn, DB_USER, DB_PASSWORD);
+
+//var_dump($pdo); // checks if PDO connection/object has been created
+}
+
+catch(Exception $e)
+{
+	echo "an error has occured";
+}
+
+//quicksort function
+function quick_sort($my_array)
+ {
+	$loe = $gt = array();
+	if(count($my_array) < 2)
+	{
+		return $my_array;
+	}
+	$pivot_key = key($my_array);
+	$pivot = array_shift($my_array);
+	foreach($my_array as $val)
+	{
+		if($val <= $pivot)
+		{
+			$loe[] = $val;
+		}elseif ($val > $pivot)
+		{
+			$gt[] = $val;
+		}
+	}
+	return array_merge(quick_sort($loe),array($pivot_key=>$pivot),quick_sort($gt));
+}
+
+//insertion sort 
+function insertion_Sort($my_array)
+{
+	for($i=0;$i<count($my_array);$i++){
+		$val = $my_array[$i];
+		$j = $i-1;
+		while($j>=0 && $my_array[$j] > $val){
+			$my_array[$j+1] = $my_array[$j];
+			$j--;
+		}
+		$my_array[$j+1] = $val;
+	}
+return $my_array;
+}
+
+
+//print some data from table
+$dataPoints = array();
+
+
+foreach($pdo->query("SELECT * FROM storec LIMIT 5") as $row )
+{
+	echo $row["Date"] . " " . $row[dow] . " " . $row[Stonewall] . " " . $row[Foxchase] . " " . $row[Warrenton] . " " . $row[Bristow] . " " . $row[BJ] . " " . $row[Heritage] . " " . $row[Eastgate] . " " . "<br>";
+
+
+	array_push($dataPoints, array("label" => $row["Date"], "y" => $row[Stonewall]));
+}
+
+
+//selects day from date field
+foreach($pdo->query("SELECT date_format(Date,'%d') FROM storec LIMIT 5") as $dataDay )
+{
+	echo "data day " . $dataDay["date_format(Date,'%d')"] . "<br>";
+}
+
+foreach($pdo->query("SELECT date_format(Date,'%m') FROM storec LIMIT 5") as $dataMonth )
+{
+	echo "data month " . $dataMonth["date_format(Date,'%m')"] . "<br>";
+}
+
+foreach($pdo->query("SELECT date_format(Date,'%Y') FROM storec LIMIT 5") as $dataYear )
+{
+	echo "data year " . $dataYear["date_format(Date,'%Y')"] . "<br>";
+}
+
+
+
+
+// simple zoom chart with dummy data
+/*
+$dataPoints = array();
+$y = 40;
+for($i = 0; $i < 1000; $i++)
+{
+	$y += rand(0, 10) - 5; 
+	array_push($dataPoints, array("x" => $i, "y" => $y));
+}
+*/
+
+?>
+
+
+
+<!-- simple zoom with $datapoints
+<!DOCTYPE HTML>
+
+<html>
+<head> 
+<script>
+window.onload = function () {
+ 
+var chart = new CanvasJS.Chart("chartContainer", 
+{
+	theme: "light2", // "light1", "light2", "dark1", "dark2"
+	animationEnabled: true,
+	zoomEnabled: true,
+	title: 
+	{
+		text: "Try Zooming and Panning"
+	},
+	
+	//x-axis date labeling;
+	/*
+	axisX: {
+			labelFormatter: function (e) {
+				return CanvasJS.formatDate( e.value, "DD");
+			},
+			labelAngle: -20
+		},
+	
+	*/
+	
+	data: 
+	[{
+		type: "line",     
+		dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+	}]
+});
+chart.render();
+ 
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 370px; width: 50%; margin: auto; padding: 20px;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>
+-->
+
+
+
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<script>
+window.onload = function() {
+ 
+var updateInterval = <?php echo $updateInterval ?>;
+var dataPoints1 = <?php echo json_encode($dataPoints1, JSON_NUMERIC_CHECK); ?>;
+var dataPoints2 = <?php echo json_encode($dataPoints2, JSON_NUMERIC_CHECK); ?>;
+var yValue1 = <?php echo $y1 ?>;
+var yValue2 = <?php echo $y2 ?>;
+var xValue = <?php echo $x ?>;
+ 
+var chart = new CanvasJS.Chart("chartContainer", {
+	zoomEnabled: true,
+	title: {
+		text: "Live Power Consumption of 2 Buildings"
+	},
+	axisX: {
+		title: "chart updates every " + updateInterval / 1000 + " secs"
+	},
+	axisY:{
+		suffix: " watts",
+		includeZero: false
+	}, 
+	toolTip: {
+		shared: true
+	},
+	legend: {
+		cursor:"pointer",
+		verticalAlign: "top",
+		fontSize: 22,
+		fontColor: "dimGrey",
+		itemclick : toggleDataSeries
+	},
+	data: [{ 
+			type: "line",
+			name: "Building A",
+			xValueType: "dateTime",
+			yValueFormatString: "#,### watts",
+			xValueFormatString: "hh:mm:ss TT",
+			showInLegend: true,
+			legendText: "{name} " + yValue1 + " watts",
+			dataPoints: dataPoints1
+		},
+		{				
+			type: "line",
+			name: "Building B" ,
+			xValueType: "dateTime",
+			yValueFormatString: "#,### watts",
+			showInLegend: true,
+			legendText: "{name} " + yValue2 + " watts",
+			dataPoints: dataPoints2
+	}]
+});
+ 
+chart.render();
+setInterval(function(){updateChart()}, updateInterval);
+ 
+function toggleDataSeries(e) {
+	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+		e.dataSeries.visible = false;
+	}
+	else {
+		e.dataSeries.visible = true;
+	}
+	chart.render();
+}
+ 
+function updateChart() {
+	var deltaY1, deltaY2;
+	xValue += updateInterval;
+	// adding random value
+	yValue1 += Math.round(2 + Math.random() *(-2-2));
+	yValue2 += Math.round(2 + Math.random() *(-2-2));
+ 
+	// pushing the new values
+	dataPoints1.push({
+		x: xValue,
+		y: yValue1
+	});
+	dataPoints2.push({
+		x: xValue,
+		y: yValue2
+	});
+ 
+	// updating legend text with  updated with y Value 
+	chart.options.data[0].legendText = "Building A " + yValue1 + " watts";
+	chart.options.data[1].legendText = " Building B " + yValue2+ " watts"; 
+	chart.render();
+}
+ 
+}
+</script>
+</head>
+<body>
+<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</body>
+</html>                              
+
+
