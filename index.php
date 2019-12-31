@@ -25,7 +25,7 @@ $pdo = new PDO($dsn, DB_USER, DB_PASSWORD);
 
 catch(Exception $e)
 {
-	echo "an error has occured";
+	echo "an error has occured with connection";
 }
 
 //grabbing query from pdo connection
