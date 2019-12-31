@@ -3,7 +3,7 @@
 
 include_once('connection.php'); //connection credentials
 
-//limit of queries 
+//limit of queries
 $limit = 20;
 
 //hello world
@@ -42,7 +42,7 @@ foreach($pdo->query("SELECT * FROM storec LIMIT " . $limit) as $row )
 
 
 ?>
-
+<!-- HTML coding for graph -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
