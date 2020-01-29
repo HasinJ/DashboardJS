@@ -1,6 +1,6 @@
 <?php
 
-//files required 
+//files required
 
 include_once('connection.php'); //connection credentials
 
@@ -47,7 +47,7 @@ function quick_sort($my_array)
 	return array_merge(quick_sort($loe),array($pivot_key=>$pivot),quick_sort($gt));
 }
 
-//insertion sort 
+//insertion sort
 function insertion_Sort($my_array)
 {
 	for($i=0;$i<count($my_array);$i++){
@@ -60,6 +60,18 @@ function insertion_Sort($my_array)
 		$my_array[$j+1] = $val;
 	}
 return $my_array;
+}
+
+
+//grabbing query from pdo connection
+$dataPoints = array();
+$labelTime = array();
+foreach($pdo->query("SELECT * FROM storec LIMIT " . $limit) as $row )
+{
+	echo $row["Date"] . " " . $row[dow] . " " . $row[Stonewall] . " " . $row[Foxchase] . " " . $row[Warrenton] . " " . $row[Bristow] . " " . $row[BJ] . " " . $row[Heritage] . " " . $row[Eastgate] . " " . "<br>";
+
+	array_push($dataPoints, $row[Foxchase]);
+	array_push($labelTime, $row["Date"]);
 }
 
 
@@ -101,7 +113,7 @@ $dataPoints = array();
 $y = 40;
 for($i = 0; $i < 1000; $i++)
 {
-	$y += rand(0, 10) - 5; 
+	$y += rand(0, 10) - 5;
 	array_push($dataPoints, array("x" => $i, "y" => $y));
 }
 */
@@ -114,20 +126,20 @@ for($i = 0; $i < 1000; $i++)
 <!DOCTYPE HTML>
 
 <html>
-<head> 
+<head>
 <script>
 window.onload = function () {
- 
-var chart = new CanvasJS.Chart("chartContainer", 
+
+var chart = new CanvasJS.Chart("chartContainer",
 {
 	theme: "light2", // "light1", "light2", "dark1", "dark2"
 	animationEnabled: true,
 	zoomEnabled: true,
-	title: 
+	title:
 	{
 		text: "Try Zooming and Panning"
 	},
-	
+
 	//x-axis date labeling;
 	/*
 	axisX: {
@@ -136,17 +148,17 @@ var chart = new CanvasJS.Chart("chartContainer",
 			},
 			labelAngle: -20
 		},
-	
+
 	*/
-	
-	data: 
+
+	data:
 	[{
-		type: "line",     
+		type: "line",
 		dataPoints: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
 	}]
 });
 chart.render();
- 
+
 }
 </script>
 </head>
@@ -166,14 +178,14 @@ chart.render();
 <head>
 <script>
 window.onload = function() {
- 
+
 var updateInterval = <?php echo $updateInterval ?>;
 var dataPoints1 = <?php echo json_encode($dataPoints1, JSON_NUMERIC_CHECK); ?>;
 var dataPoints2 = <?php echo json_encode($dataPoints2, JSON_NUMERIC_CHECK); ?>;
 var yValue1 = <?php echo $y1 ?>;
 var yValue2 = <?php echo $y2 ?>;
 var xValue = <?php echo $x ?>;
- 
+
 var chart = new CanvasJS.Chart("chartContainer", {
 	zoomEnabled: true,
 	title: {
@@ -185,7 +197,7 @@ var chart = new CanvasJS.Chart("chartContainer", {
 	axisY:{
 		suffix: " watts",
 		includeZero: false
-	}, 
+	},
 	toolTip: {
 		shared: true
 	},
@@ -196,7 +208,7 @@ var chart = new CanvasJS.Chart("chartContainer", {
 		fontColor: "dimGrey",
 		itemclick : toggleDataSeries
 	},
-	data: [{ 
+	data: [{
 			type: "line",
 			name: "Building A",
 			xValueType: "dateTime",
@@ -206,7 +218,7 @@ var chart = new CanvasJS.Chart("chartContainer", {
 			legendText: "{name} " + yValue1 + " watts",
 			dataPoints: dataPoints1
 		},
-		{				
+		{
 			type: "line",
 			name: "Building B" ,
 			xValueType: "dateTime",
@@ -216,10 +228,10 @@ var chart = new CanvasJS.Chart("chartContainer", {
 			dataPoints: dataPoints2
 	}]
 });
- 
+
 chart.render();
 setInterval(function(){updateChart()}, updateInterval);
- 
+
 function toggleDataSeries(e) {
 	if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
 		e.dataSeries.visible = false;
@@ -229,14 +241,14 @@ function toggleDataSeries(e) {
 	}
 	chart.render();
 }
- 
+
 function updateChart() {
 	var deltaY1, deltaY2;
 	xValue += updateInterval;
 	// adding random value
 	yValue1 += Math.round(2 + Math.random() *(-2-2));
 	yValue2 += Math.round(2 + Math.random() *(-2-2));
- 
+
 	// pushing the new values
 	dataPoints1.push({
 		x: xValue,
@@ -246,13 +258,13 @@ function updateChart() {
 		x: xValue,
 		y: yValue2
 	});
- 
-	// updating legend text with  updated with y Value 
+
+	// updating legend text with  updated with y Value
 	chart.options.data[0].legendText = "Building A " + yValue1 + " watts";
-	chart.options.data[1].legendText = " Building B " + yValue2+ " watts"; 
+	chart.options.data[1].legendText = " Building B " + yValue2+ " watts";
 	chart.render();
 }
- 
+
 }
 </script>
 </head>
@@ -260,6 +272,4 @@ function updateChart() {
 <div id="chartContainer" style="height: 370px; width: 100%;"></div>
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </body>
-</html>                              
-
-
+</html>
