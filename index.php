@@ -41,21 +41,10 @@ for ($i=0; $i > -10 ; $i--) {
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <script src="codeForSubmit.js"></script>
+
+
     <script>
-
-    let graphTitle = document.querySelector('.graphTitle');
-    graphTitle.textContent = 'Title';
-
-    let inputs = document.getElementById('container').querySelectorAll('input');
-
-    inputs.forEach( (input) => {
-      input.addEventListener('click',(e) => {
-        if(e.target.type === 'submit') createChart();
-      });
-    });
-
-
-
     function createChart() {
       let ctx = document.getElementById('myChart').getContext('2d');
       let chart = new Chart(ctx, {
