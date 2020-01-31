@@ -1,5 +1,9 @@
 
+
 <?php
+
+include_once('connection.php');
+
 //grabbing query from pdo connection
 $dataPoints = array();
 $labelTime = array();
