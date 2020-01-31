@@ -4,7 +4,9 @@
 
 include_once('connection.php');
 
-//grabbing query from pdo connection
+$pdo = connectRDS();
+
+//grabbing query from pdo connection (dummy data for now)
 $dataPoints = array();
 $labelTime = array();
 for ($i=0; $i < 10; $i++) {

@@ -1,27 +1,33 @@
 <?php
 
-  //establishes connection to database using AWS
-  define('DB_NAME', $_SERVER['RDS_DB_NAME']);
-  define('DB_USER', $_SERVER['RDS_USERNAME']);
-  define('DB_PASSWORD', $_SERVER['RDS_PASSWORD']);
-  define('DB_HOST', $_SERVER['RDS_HOSTNAME']);
-  define('DB_TABLE', 'storec');
+  protected $DB_NAME;
+  protected $DB_HOST;
+  protected $DB_USER;
+  protected $DB_PASSWORD;
+  protected $DBtable;
 
-  protected function connect() {
+  protected function connectRDS() {
     //database connection
-    $dsn = 'mysql:dbname=' . DB_NAME . ';host=' . DB_HOST;
+
+    $this->DB_NAME = 'hasindatabase';
+    $this->DB_HOST = 'hasindatabase.c0v7lriogf7u.us-east-2.rds.amazonaws.com';
+    $this->DB_USER = 'admin';
+    $this->DB_PASSWORD = 'hasinmc11';
+    $this->DBtable = 'storec';
+
+    $dsn = 'mysql:dbname=' . $this->DB_NAME . ';host=' . $this->DB_HOST;
 
     try {
-    $pdo = new PDO($dsn, DB_USER, DB_PASSWORD);
+    $pdo = new PDO($dsn, $this->DB_USER, $this->DB_PASSWORD);
     //var_dump($pdo); // checks if PDO connection/object has been created
     }
 
     catch(Exception $e) {
-    	echo "an error has occured";
+    	echo "an error has occured with DB connection";
     }
 
     return $pdo;
-
   }
+
 
 ?>
