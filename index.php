@@ -5,10 +5,18 @@
 include_once('connection.php');
 
 $pdo = connectRDS();
+$limit = 20;
 
 //grabbing query from pdo connection (dummy data for now)
 $dataPoints = array();
 $labelTime = array();
+foreach($pdo->query("SELECT * FROM storec LIMIT " . $limit) as $row )
+{
+	array_push($dataPoints, $row['Foxchase']);
+	array_push($labelTime, $row["Date"]);
+}
+
+/*
 for ($i=0; $i < 10; $i++) {
   array_push($dataPoints, $i);
 }
@@ -16,6 +24,7 @@ for ($i=0; $i < 10; $i++) {
 for ($i=0; $i > -10 ; $i--) {
   array_push($labelTime, $i);
 }
+*/
 ?>
 
 
