@@ -12,7 +12,7 @@
     $DB_NAME = 'hasindatabase';
     $DB_HOST = 'hasindatabase.c0v7lriogf7u.us-east-2.rds.amazonaws.com';
     $DB_USER = 'admin';
-    $DB_PASSWORD = 'Hasinmc11';
+    $DB_PASSWORD = 'hasinmc11';
     $DBtable = 'storec';
 
     $dsn = 'mysql:host=' . $DB_HOST . ';dbname=' . $DB_NAME . ';charset=utf8mb4' . ';port=3306';
