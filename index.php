@@ -68,7 +68,7 @@ for ($i=0; $i > -10 ; $i--) {
 			</div>
 
 			<div class="col-md-6" style="margin-top:40px;">
-				<form id="pullOut" action="/forms/retrieve.php" method="post">
+				<form id="pullOut" action="forms/retrieve.php" method="post">
 
 					<input type="date" name="date">
 					<select name="holiday">
