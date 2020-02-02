@@ -3,6 +3,7 @@
   require('../connection.php');
   $connection = new db;
   $pdo = $connection->connectLOCAL();
+  //$pdo = $connection->connectRDS();
 
 
   /* this is for creating the table if it doesn't exist
