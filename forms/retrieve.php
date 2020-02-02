@@ -28,7 +28,7 @@
   } catch (PDOException $e) {
     echo $e->getMessage();
   } catch (Exception $e) {
-    echo "nothing for this holiday";
+    echo "nothing for this date/holiday";
   }
 
 
