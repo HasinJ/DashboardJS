@@ -6,6 +6,9 @@ first obj:
 
 second obj:
   1. dropdown menu with graph
+    1. one dropdown for the store (or for all stores)
+    2. one dropdown for the beverages
+    3. one date selector thingie (but default today's date)
   2. making a sidebar thingie
 
 third obj:
