@@ -28,7 +28,7 @@ class db
     }
 
     catch(PDOException $e) {
-      echo "an error has occured with DB connection ".$e->getMessage();
+      echo "something went wrong ".$e->getMessage();
     }
   }
 
