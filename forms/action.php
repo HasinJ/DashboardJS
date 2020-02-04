@@ -6,7 +6,8 @@
   //$pdo = $connection->connectRDS();
 
 
-  /* this is for creating the table if it doesn't exist
+// this is for creating the table if it doesn't exist
+/*
   $sql = 'CREATE TABLE submitTEST(
     id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     inputDate DATE,
@@ -16,11 +17,12 @@
 
   try {
     $pdo->exec($sql);
+    echo 'table creation successful!';
   }
   catch (PDOException $e) {
     echo $e->getMessage();
   }
-  */
+*/
 
 try {
 
