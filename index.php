@@ -113,8 +113,19 @@ for ($i=0; $i > -10 ; $i--) {
 
 		</div>
 
-    <div class="col-md-10 offset-md-1">
+    <div class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
+			<select name="storeSelection">
+				<option value="default">All Stores</option>
+				<option value="Foxchase">Foxchase</option>
+				<option value="Stonewall">Stonewall</option>
+			</select>
+			<select name="beverages">
+				<option value="Coffee">Coffee</option>
+				<option value="Water">Water</option>
+				<option value="Latte">Latte</option>
+			</select>
+			<input type="date" name="dateChart" value="">
       <canvas id="myChart"></canvas>
     </div>
 
@@ -125,9 +136,10 @@ for ($i=0; $i > -10 ; $i--) {
 
 
     <script>
-		createChart();
+		createChart(<?php echo json_encode($labelTime, JSON_NUMERIC_CHECK); ?>,
+			<?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>);
 
-    function createChart() {
+    function createChart(x,y) {
       let ctx = document.getElementById('myChart').getContext('2d');
       let chart = new Chart(ctx, {
       // The type of chart we want to create
@@ -135,13 +147,13 @@ for ($i=0; $i > -10 ; $i--) {
 
       // The data for our dataset
       data: {
-          labels: <?php echo json_encode($labelTime, JSON_NUMERIC_CHECK); ?>,
+          labels: x,
           datasets: [{
               label: 'Foxchase',
   			fill: false,
               //backgroundColor: 'rgb(0, 99, 132)',
               borderColor: 'rgb(255, 99, 132)',
-              data: <?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>
+              data: y
           }]
       },
 
