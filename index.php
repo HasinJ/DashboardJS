@@ -43,7 +43,8 @@ catch(PDOException $e)
 $limit = 20;
 $dataPoints = array();
 $labelTime = array();
-foreach($pdo->query("SELECT * FROM storec LIMIT " . $limit) as $row )
+$table = 'storec';
+foreach($pdo->query("SELECT * FROM " . $table . " LIMIT " . $limit) as $row )
 {
 	array_push($dataPoints, $row['Foxchase']);
 	array_push($labelTime, $row["Date"]);
@@ -116,14 +117,14 @@ for ($i=0; $i > -10 ; $i--) {
     <div class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
 			<select name="storeSelection">
-				<option value="default">All Stores</option>
+				<option value="Default">All Stores</option>
 				<option value="Foxchase">Foxchase</option>
 				<option value="Stonewall">Stonewall</option>
 			</select>
 			<select name="beverages">
-				<option value="Coffee">Coffee</option>
-				<option value="Water">Water</option>
-				<option value="Latte">Latte</option>
+				<option value="Beverages">Beverages</option>
+				<option value="Donuts">Donuts</option>
+				<option value="Bagels">Bagels</option>
 			</select>
 			<input type="date" name="dateChart" value="">
       <canvas id="myChart"></canvas>

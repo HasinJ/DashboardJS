@@ -15,7 +15,6 @@ class db
   private $DB_HOST;
   private $DB_USER;
   private $DB_PASSWORD;
-  private $DBtable;
 
   private function pdo(){
     $dsn = 'mysql:host=' . $this->DB_HOST . ';dbname=' . $this->DB_NAME . ';charset=utf8mb4' . ';port=3306';
@@ -38,7 +37,6 @@ class db
     $this->DB_HOST = 'hasindatabase.c0v7lriogf7u.us-east-2.rds.amazonaws.com';
     $this->DB_USER = 'admin';
     $this->DB_PASSWORD = 'hasinmc11';
-    $this->DBtable = 'storec';
 
     return $this->pdo();
 
@@ -50,14 +48,25 @@ class db
     $this->DB_HOST = 'localhost';
     $this->DB_USER = 'root';
     $this->DB_PASSWORD = '';
-    $this->DBtable = '';
 
     return $this->pdo();
 
   }
 
-  public function getTable() {
-    return $this->$DBtable;
+  public function getUser() {
+    return $this->$DB_USER;
+  }
+
+  public function getPassword(){
+    return $this->$DB_PASSWORD;
+  }
+
+  public function setUser($user){
+    $this->$DB_USER = $user;
+  }
+
+  public function setPassword($password){
+    $this->$DB_PASSWORD = $password;
   }
 }
 
