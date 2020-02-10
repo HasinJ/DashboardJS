@@ -65,6 +65,11 @@ require('code.php');
 				<option value="allStores">All Stores</option>
 				<option value="Foxchase">Foxchase</option>
 				<option value="Stonewall">Stonewall</option>
+        <option value="Warrenton">Warrenton</option>
+        <option value="Bristow">Bristow</option>
+        <option value="bj">BJ</option>
+        <option value="Heritage">Heritage</option>
+        <option value="Eastgate">Eastgate</option>
 			</select>
 
 			<input type="date" name="dateChart" value="">
@@ -86,8 +91,23 @@ require('code.php');
 		let Stonewall = [{
 			data: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
+		let Warrenton = [{
+			data: <?php $graphObj->fillLine('Warrenton'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
-		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall};
+		let Bristow = [{
+			data: <?php $graphObj->fillLine('Bristow'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
+
+		let bj = [{
+			data: <?php $graphObj->fillLine('BJ'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
+
+		let Heritage = [{
+			data: <?php $graphObj->fillLine('Heritage'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
+
+		let Eastgate = [{
+			data: <?php $graphObj->fillLine('Eastgate'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
+
+
+		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall, 'Warrenton': Warrenton, 'Bristow': Bristow, 'bj': bj, 'Heritage': Heritage, 'Eastgate': Eastgate};
 
 		const storeSelection = document.getElementById('storeSelection');
 		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection,Stores));
