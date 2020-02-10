@@ -74,60 +74,36 @@ require('code.php');
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script src="js/CanvasManipulation.js"></script>
-
+		<script src="js/chartManipulation.js"></script>
 
     <script>
 
 
-
+		//edit these to add new stores
 		let Foxchase = [{
 			data: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
 		let Stonewall = [{
 			data: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
-		let allStores = [Foxchase,Stonewall];
 
-		function chart(targetValue,targetIndex){
-			allStores[targetIndex][0].label = targetValue;
-			allStores[targetIndex][0].fill = false;
-			allStores[targetIndex][0].borderColor = eval(targetValue.toLowerCase() + 'Color');
-		}
-
-		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, Foxchase.concat(Stonewall));
+		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall};
 
 		const storeSelection = document.getElementById('storeSelection');
-		storeSelection.addEventListener('change',(e) => {
+		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection,Stores));
+		storeSelection.addEventListener('change',changeLines);
+
+		function changeLines(e) {
 			deleteCanvas();
-			if (e.target.selectedIndex == 0)
-			chart(e.target.value, (e.target.selectedIndex)-1);
-			createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(e.target.value));
-		});
-
-    function createChart(x, set) {
-      let ctx = document.getElementById('myChart');
-
-			if (ctx==null) {
-				createCanvas();
-				ctx = document.getElementById('myChart').getContext('2d');
+			if (e.target.value == 'allStores')
+			{	createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(e.target, Stores));}
+			else {
+				chart(e.target.value, Stores);
+				createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(e.target.value));
 			}
+		}
 
-			ctx = document.getElementById('myChart').getContext('2d');
-      let chart = new Chart(ctx, {
-      // The type of chart we want to create
-      type: 'line',
 
-      // The data for our dataset
-      data: {
-          labels: x,
-          datasets: set
-      },
-
-      // Configuration options go here
-      options: {}
-  });
-}
     </script>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
