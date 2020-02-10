@@ -7,54 +7,13 @@ require('phpClasses/graph.php');
 $connObject = new db;
 try {
 	$pdo = $connObject->connectLOCAL();
+	//$pdo = $connObject->connectRDS();
 } catch (PDOException $e) {
 	echo 'connection failed';
 }
 
-
-
-//$pdo = $connObject->connectRDS();
-
-//to test if connection is actually working
-/*
-$dbhost = 'hasindatabase.c0v7lriogf7u.us-east-2.rds.amazonaws.com';
-$dbport = '3306';
-$dbname = 'hasindatabase';
-$charset = 'utf8mb4';
-$dsn = "mysql:host={$dbhost};port={$dbport};dbname={$dbname};charset={$charset}";
-$username = 'admin';
-$password = 'hasinmc11';
-
-try {
-
-	$pdo = new PDO($dsn, $username, $password);
-	$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	echo 'good DB connection';
-}
-catch(PDOException $e)
-{
-	echo "Connection failed: <br>  ". $e->getMessage();
-}
-*/
-
-
-
 //grabbing query from pdo connection
 $graphObj = new graph($pdo);
-
-
-//dummy data
-/*
-$dataPoints = array();
-$labelTime = array();
-for ($i=0; $i < 10; $i++) {
-  array_push($dataPoints, $i);
-}
-
-for ($i=0; $i > -10 ; $i--) {
-  array_push($labelTime, $i); //should be negative
-}
-*/
 
 ?>
 
