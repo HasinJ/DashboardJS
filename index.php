@@ -130,7 +130,7 @@ for ($i=0; $i > -10 ; $i--) {
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script src="js/codeForSubmit.js"></script>
+    <script src="js/CanvasManipulation.js"></script>
 
 
     <script>
