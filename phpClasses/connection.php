@@ -20,9 +20,10 @@ class db
     $dsn = 'mysql:host=' . $this->DB_HOST . ';dbname=' . $this->DB_NAME . ';charset=utf8mb4' . ';port=3306';
 
     try {
-    $pdo = new PDO($dsn, $this->DB_USER, $this->DB_PASSWORD);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    return $pdo;
+      $pdo = new PDO($dsn, $this->DB_USER, $this->DB_PASSWORD);
+      $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $dsn='';
+      return $pdo;
     //var_dump($pdo); // checks if PDO connection/object has been created
     }
 
