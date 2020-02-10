@@ -41,7 +41,6 @@ catch(PDOException $e)
 
 //grabbing query from pdo connection
 $graphObj = new graph($pdo);
-$graphObj->fillLine('Foxchase');
 
 
 //dummy data
@@ -111,14 +110,14 @@ for ($i=0; $i > -10 ; $i--) {
     <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
 
-			<select name="beverages">
+			<select id="beverages">
 				<option value="beverages">Beverages</option>
 				<option value="donuts">Donuts</option>
 				<option value="bagels">Bagels</option>
 			</select>
 
-			<select name="storeSelection">
-				<option value="Default">All Stores</option>
+			<select id="storeSelection">
+				<option value="allStores">All Stores</option>
 				<option value="Foxchase">Foxchase</option>
 				<option value="Stonewall">Stonewall</option>
 			</select>
@@ -131,30 +130,38 @@ for ($i=0; $i > -10 ; $i--) {
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="js/CanvasManipulation.js"></script>
+		<script src="js/chartLines.js"></script>
 
 
     <script>
-		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>,
-			<?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>,
-			'Foxchase');
 
-		deleteCanvas();
+		let Foxchase = [{
+			label: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getColumn(), JSON_NUMERIC_CHECK);?>,
+			fill: false,
+			//backgroundColor: 'rgb(0, 99, 132)',
+			borderColor: foxchaseColor,
+			data: <?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>
+		}];
 
-		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>,
-			<?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>,
-			'Foxchase');
+		let Stonewall = [{
+			label: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getColumn(), JSON_NUMERIC_CHECK);?>,
+			fill: false,
+			//backgroundColor: 'rgb(0, 99, 132)',
+			borderColor: stonewallColor,
+			data: <?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>
+		}];
 
+		let allStores = Foxchase.concat(Stonewall);
+		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores);
 
-    function createChart(x,y,stringLabel) {
+		const storeSelection = document.getElementById('storeSelection');
+		storeSelection.addEventListener('change',(e) => {
+			deleteCanvas();
+			createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(e.target.value));
+		});
+
+    function createChart(x, set) {
       let ctx = document.getElementById('myChart');
-			let set =
-				{
-					label: stringLabel,
-					fill: false,
-					//backgroundColor: 'rgb(0, 99, 132)',
-					borderColor: 'rgb(255, 99, 132)',
-					data: y
-				};
 
 			if (ctx==null) {
 				createCanvas();
@@ -169,7 +176,7 @@ for ($i=0; $i > -10 ; $i--) {
       // The data for our dataset
       data: {
           labels: x,
-          datasets:[set]
+          datasets: set
       },
 
       // Configuration options go here

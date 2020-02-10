@@ -3,6 +3,14 @@
 let graphTitle = document.querySelector('.graphTitle');
 graphTitle.textContent = 'Graph';
 
+let stonewallColor = 'rgb(255,133,10)';
+let foxchaseColor = 'rgb(255,99,132)';
+let warrentonColor = 'rgb(255,247,8)';
+let bristowColor = 'rgb(142,255,13)';
+let bjColor = 'rgb(0,255,255)';
+let heritageColor = 'rgb(118,59,255)';
+let eastgateColor = 'rgb(255,64,166)';
+
 function deleteCanvas(){
   let ctx = document.getElementById('myChart');
   let container = document.getElementById('container');
