@@ -2,7 +2,8 @@
 
 <?php
 
-require('connection.php');
+require('phpClasses/connection.php');
+require('phpClasses/graph.php');
 $connObject = new db;
 try {
 	$pdo = $connObject->connectLOCAL();
@@ -39,19 +40,12 @@ catch(PDOException $e)
 
 
 //grabbing query from pdo connection
-/*
-$limit = 20;
-$dataPoints = array();
-$labelTime = array();
-$table = 'storec';
-foreach($pdo->query("SELECT * FROM " . $table . " LIMIT " . $limit) as $row )
-{
-	array_push($dataPoints, $row['Foxchase']);
-	array_push($labelTime, $row["Date"]);
-}
-*/
+$graphObj = new graph($pdo);
+$graphObj->fillLine('Foxchase');
+
 
 //dummy data
+/*
 $dataPoints = array();
 $labelTime = array();
 for ($i=0; $i < 10; $i++) {
@@ -61,6 +55,7 @@ for ($i=0; $i < 10; $i++) {
 for ($i=0; $i > -10 ; $i--) {
   array_push($labelTime, $i); //should be negative
 }
+*/
 
 ?>
 
@@ -74,7 +69,6 @@ for ($i=0; $i > -10 ; $i--) {
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-		<link rel="stylesheet" href="main.css">
 
     <title></title>
   </head>
@@ -114,18 +108,21 @@ for ($i=0; $i > -10 ; $i--) {
 
 		</div>
 
-    <div class="col-md-10 offset-md-1" align='center'>
+    <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
+
+			<select name="beverages">
+				<option value="beverages">Beverages</option>
+				<option value="donuts">Donuts</option>
+				<option value="bagels">Bagels</option>
+			</select>
+
 			<select name="storeSelection">
 				<option value="Default">All Stores</option>
 				<option value="Foxchase">Foxchase</option>
 				<option value="Stonewall">Stonewall</option>
 			</select>
-			<select name="beverages">
-				<option value="Beverages">Beverages</option>
-				<option value="Donuts">Donuts</option>
-				<option value="Bagels">Bagels</option>
-			</select>
+
 			<input type="date" name="dateChart" value="">
       <canvas id="myChart"></canvas>
     </div>
@@ -137,11 +134,34 @@ for ($i=0; $i > -10 ; $i--) {
 
 
     <script>
-		createChart(<?php echo json_encode($labelTime, JSON_NUMERIC_CHECK); ?>,
-			<?php echo json_encode($dataPoints, JSON_NUMERIC_CHECK); ?>);
+		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>,
+			<?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>,
+			'Foxchase');
 
-    function createChart(x,y) {
-      let ctx = document.getElementById('myChart').getContext('2d');
+		deleteCanvas();
+
+		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>,
+			<?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>,
+			'Foxchase');
+
+
+    function createChart(x,y,stringLabel) {
+      let ctx = document.getElementById('myChart');
+			let set =
+				{
+					label: stringLabel,
+					fill: false,
+					//backgroundColor: 'rgb(0, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					data: y
+				};
+
+			if (ctx==null) {
+				createCanvas();
+				ctx = document.getElementById('myChart').getContext('2d');
+			}
+
+			ctx = document.getElementById('myChart').getContext('2d');
       let chart = new Chart(ctx, {
       // The type of chart we want to create
       type: 'line',
@@ -149,13 +169,7 @@ for ($i=0; $i > -10 ; $i--) {
       // The data for our dataset
       data: {
           labels: x,
-          datasets: [{
-              label: 'Foxchase',
-  			fill: false,
-              //backgroundColor: 'rgb(0, 99, 132)',
-              borderColor: 'rgb(255, 99, 132)',
-              data: y
-          }]
+          datasets:[set]
       },
 
       // Configuration options go here
