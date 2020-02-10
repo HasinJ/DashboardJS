@@ -1,22 +1,8 @@
 
 
 <?php
-
-require('phpClasses/connection.php');
-require('phpClasses/graph.php');
-$connObject = new db;
-try {
-	$pdo = $connObject->connectLOCAL();
-	//$pdo = $connObject->connectRDS();
-} catch (PDOException $e) {
-	echo 'connection failed';
-}
-
-//grabbing query from pdo connection
-$graphObj = new graph($pdo);
-
+require('code.php');
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -89,33 +75,33 @@ $graphObj = new graph($pdo);
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <script src="js/CanvasManipulation.js"></script>
-		<script src="js/chartLines.js"></script>
 
 
     <script>
 
+
+
 		let Foxchase = [{
-			label: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getColumn(), JSON_NUMERIC_CHECK);?>,
-			fill: false,
-			//backgroundColor: 'rgb(0, 99, 132)',
-			borderColor: foxchaseColor,
-			data: <?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>
-		}];
+			data: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
 		let Stonewall = [{
-			label: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getColumn(), JSON_NUMERIC_CHECK);?>,
-			fill: false,
-			//backgroundColor: 'rgb(0, 99, 132)',
-			borderColor: stonewallColor,
-			data: <?php echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>
-		}];
+			data: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
-		let allStores = Foxchase.concat(Stonewall);
-		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores);
+		let allStores = [Foxchase,Stonewall];
+
+		function chart(targetValue,targetIndex){
+			allStores[targetIndex][0].label = targetValue;
+			allStores[targetIndex][0].fill = false;
+			allStores[targetIndex][0].borderColor = eval(targetValue.toLowerCase() + 'Color');
+		}
+
+		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, Foxchase.concat(Stonewall));
 
 		const storeSelection = document.getElementById('storeSelection');
 		storeSelection.addEventListener('change',(e) => {
 			deleteCanvas();
+			if (e.target.selectedIndex == 0)
+			chart(e.target.value, (e.target.selectedIndex)-1);
 			createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(e.target.value));
 		});
 
