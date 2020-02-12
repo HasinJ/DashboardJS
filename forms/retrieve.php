@@ -1,6 +1,6 @@
 <?php
 
-  require('../connection.php');
+  require('../phpClasses/connection.php');
   $connection = new db;
   $pdo = $connection->connectLOCAL();
   //$pdo = $connection->connectRDS();
