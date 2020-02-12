@@ -108,23 +108,6 @@ require('code.php');
 
 
 
-		//edit these to add new stores
-		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall};
-
-		const storeSelection = document.getElementById('storeSelection');
-		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection,Stores));
-		storeSelection.addEventListener('change',changeLines);
-
-		function changeLines(e) {
-			deleteCanvas();
-			if (e.target.value == 'allStores')
-			{	createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(e.target, Stores));}
-			else {
-				chart(e.target.value, Stores);
-				createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(e.target.value));
-			}
-		}
-
 
     </script>
 
