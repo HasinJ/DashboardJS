@@ -24,7 +24,7 @@ function createCanvas() {
   container.appendChild(ctx);
 }
 
-function createChart(x, set) {
+function createChart(timeSet, lineSpecifications) {
   let ctx = document.getElementById('myChart');
 
   if (ctx==null) {
@@ -39,8 +39,8 @@ function createChart(x, set) {
 
   // The data for our dataset
   data: {
-      labels: x,
-      datasets: set
+      labels: timeSet,
+      datasets: lineSpecifications
   },
 
   // Configuration options go here
