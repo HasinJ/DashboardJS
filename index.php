@@ -52,6 +52,11 @@ require('code.php');
 
 		</div>
 
+    <form  action="">
+      <input type="button" onclick="test()">
+      <p id="emptyText"></p>
+    </form>
+
     <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
 
@@ -78,15 +83,32 @@ require('code.php');
 
     <script>
 
+    let Foxchase = [{}];
+    let Stonewall = [{}];
+    let result;
+    function test() {
+      console.log('hi');
+      let xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+        if (this.readyState==4 && this.status==200) {
+          Foxchase[0].data= JSON.parse(this.responseText)[0];
+          Foxchase[0].label = 'Foxchase';
+          Foxchase[0].fill = false;
+          Foxchase[0].borderColor = foxchaseColor;
+
+          createChart(JSON.parse(this.responseText)[1], Foxchase);
+
+          result = JSON.parse(this.responseText);
+        }
+      };
+      xhttp.open('POST', 'xhttp.php', true);
+      xhttp.send();
+
+    }
+
+
 
 		//edit these to add new stores
-		let Foxchase = [{
-			data: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-		let Stonewall = [{
-			data: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-
 		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall};
 
 		const storeSelection = document.getElementById('storeSelection');
