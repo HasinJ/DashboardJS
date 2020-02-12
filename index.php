@@ -2,6 +2,7 @@
 
 <?php
 require('code.php');
+$graphObj->setTable('beverages');
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +56,7 @@ require('code.php');
     <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
 
-			<select id="beverages">
+			<select id="items">
 				<option value="beverages">Beverages</option>
 				<option value="donuts">Donuts</option>
 				<option value="bagels">Bagels</option>
@@ -85,7 +86,7 @@ require('code.php');
 
 
 		//edit these to add new stores
-		let Foxchase = [{
+    let Foxchase = [{
 			data: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
 
 		let Stonewall = [{
@@ -109,20 +110,43 @@ require('code.php');
 
 		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall, 'Warrenton': Warrenton, 'Bristow': Bristow, 'bj': bj, 'Heritage': Heritage, 'Eastgate': Eastgate};
 
+    <?php $graphObj->setTable('bagels'); ?>
+
+
+
 		const storeSelection = document.getElementById('storeSelection');
+
 		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection,Stores));
 		storeSelection.addEventListener('change',changeLines);
 
-		function changeLines(e) {
+		function changeLines() {
 			deleteCanvas();
-			if (e.target.value == 'allStores')
-			{	createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(e.target, Stores));}
+			if (storeSelection.value == 'allStores')
+			{	createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection, Stores));}
 			else {
-				chart(e.target.value, Stores);
-				createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(e.target.value));
+				chart(storeSelection.value, Stores);
+				createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(storeSelection.value));
 			}
 		}
 
+    const itemSelection = document.getElementById('items');
+    itemSelection.addEventListener('change',changeTable);
+
+
+    function changeTable(){
+      switch (itemSelection.value) {
+        case 'donuts':
+          <?php $graphObj->setTable('donuts');?>
+          break;
+        case 'beverages':
+          <?php $graphObj->setTable('beverages');?>
+          break;
+        case 'bagels':
+          <?php $graphObj->setTable('bagels');?>
+          break;
+      }
+      changeLines();
+    }
 
     </script>
 

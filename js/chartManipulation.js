@@ -9,7 +9,7 @@ let warrentonColor = 'rgb(255,247,8)';
 let bristowColor = 'rgb(142,255,13)';
 let bjColor = 'rgb(0,255,255)';
 let heritageColor = 'rgb(118,59,255)';
-let eastgateColor = 'rgb(0,0,0)';
+let eastgateColor = 'rgb(255,153,255)';
 
 function deleteCanvas(){
   let ctx = document.getElementById('myChart');
