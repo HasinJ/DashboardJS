@@ -26,7 +26,7 @@ function createCanvas() {
 
 function createChart(timeSet, lineSpecifications) {
   let ctx = document.getElementById('myChart');
-
+  let array = [lineSpecifications];
   if (ctx==null) {
     createCanvas();
     ctx = document.getElementById('myChart').getContext('2d');
@@ -40,7 +40,7 @@ function createChart(timeSet, lineSpecifications) {
   // The data for our dataset
   data: {
       labels: timeSet,
-      datasets: lineSpecifications
+      datasets: array
   },
 
   // Configuration options go here
