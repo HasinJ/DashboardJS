@@ -4,12 +4,16 @@
   $connection = new db;
   $pdo = $connection->connectLOCAL();
   //$pdo = $connection->connectRDS();
+
   try {
     $dataPoints = array();
     $labelTime = array();
-    $sql = "SELECT * FROM beverages LIMIT 30";
+    $table = $_GET['table'];
+    $store = $_GET['store'];
+    $sql = "SELECT * FROM $table LIMIT 30";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
+
 
     $results = array();
     $results = $stmt->fetchALL(PDO::FETCH_ASSOC);
@@ -17,10 +21,10 @@
     foreach($results as $row)
     {
       array_push($labelTime, $row['Date']);
-      array_push($dataPoints, $row['Stonewall']);
+      array_push($dataPoints, $row[$store]);
     }
 
-    $timeANDpoints = array($dataPoints,$labelTime);
+    $timeANDpoints = array('dataPoints'=>$dataPoints,'labelTime'=>$labelTime);
     echo json_encode($timeANDpoints);
     exit();
 

@@ -2,6 +2,7 @@
 
 <?php
 require('code.php');
+$graphObj->setLimit(5);
 ?>
 
 <!DOCTYPE html>
@@ -53,14 +54,14 @@ require('code.php');
 		</div>
 
     <form  action="">
-      <input type="button" onclick="test()">
+      <input type="button" onclick="updateChart('Foxchase','bagels')">
       <p id="emptyText"></p>
     </form>
 
     <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
 
-			<select id="beverages">
+			<select id="itemSelection">
 				<option value="beverages">Beverages</option>
 				<option value="donuts">Donuts</option>
 				<option value="bagels">Bagels</option>
@@ -83,30 +84,36 @@ require('code.php');
 
     <script>
 
-    let Foxchase = [{}];
-    let Stonewall = [{}];
+    const storeSelection = document.getElementById('storeSelection');
+    const itemSelection = document.getElementById('itemSelection');
+    let Foxchase = {};
+    let Stonewall = {};
     let result;
-    function test() {
-      console.log('hi');
+
+    storeSelection.addEventListener('change',(e)=>updateChart(e.target.value, itemSelection.value));
+    itemSelection.addEventListener('change',(e)=>updateChart(storeSelection.value, e.target.value));
+
+    updateChart('Foxchase', 'beverages');
+
+
+    function updateChart(value, item) {
       let xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
         if (this.readyState==4 && this.status==200) {
-          Foxchase[0].data= JSON.parse(this.responseText)[0];
-          Foxchase[0].label = 'Foxchase';
-          Foxchase[0].fill = false;
-          Foxchase[0].borderColor = foxchaseColor;
+          eval(value).data= JSON.parse(this.responseText)['dataPoints'];
+          eval(value).label = value;
+          eval(value).fill = false;
+          eval(value).borderColor = eval(value.toLowerCase() + 'Color');
 
-          createChart(JSON.parse(this.responseText)[1], Foxchase);
+          createChart(JSON.parse(this.responseText)['labelTime'], eval(value));
 
           result = JSON.parse(this.responseText);
         }
       };
-      xhttp.open('POST', 'xhttp.php', true);
+      xhttp.open('GET', 'xhttp.php?table='+item+'&store='+value, true);
       xhttp.send();
 
     }
-
-
 
 
     </script>
