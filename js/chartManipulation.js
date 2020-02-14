@@ -26,7 +26,6 @@ function createCanvas() {
 
 function createChart(timeSet, lineSpecifications) {
   let ctx = document.getElementById('myChart');
-  let array = [lineSpecifications];
   if (ctx==null) {
     createCanvas();
     ctx = document.getElementById('myChart').getContext('2d');
@@ -40,25 +39,10 @@ function createChart(timeSet, lineSpecifications) {
   // The data for our dataset
   data: {
       labels: timeSet,
-      datasets: array
+      datasets: lineSpecifications
   },
 
   // Configuration options go here
   options: {}
 });
-}
-
-function chart(targetValue, storesObject){
-  storesObject[targetValue][0].label = targetValue;
-  storesObject[targetValue][0].fill = false;
-  storesObject[targetValue][0].borderColor = eval(targetValue.toLowerCase() + 'Color');
-}
-
-function allStores(targetArray, storesObject) {
-  let result = [];
-    for (var i = 1; i < targetArray.length; i++) {
-      chart(targetArray[i].value, storesObject);
-      result = result.concat(eval(targetArray[i].value));
-    }
-  return result;
 }

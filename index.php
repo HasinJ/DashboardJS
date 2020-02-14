@@ -53,10 +53,7 @@ $graphObj->setLimit(5);
 
 		</div>
 
-    <form  action="">
-      <input type="button" onclick="updateChart('Foxchase','bagels')">
-      <p id="emptyText"></p>
-    </form>
+
 
     <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
@@ -71,6 +68,11 @@ $graphObj->setLimit(5);
 				<option value="allStores">All Stores</option>
 				<option value="Foxchase">Foxchase</option>
 				<option value="Stonewall">Stonewall</option>
+        <option value="Warrenton">Warrenton</option>
+        <option value="Bristow">Bristow</option>
+        <option value="bj">BJ</option>
+        <option value="Heritage">Heritage</option>
+        <option value="Eastgate">Eastgate</option>
 			</select>
 
 			<input type="date" name="dateChart" value="">
@@ -86,33 +88,65 @@ $graphObj->setLimit(5);
 
     const storeSelection = document.getElementById('storeSelection');
     const itemSelection = document.getElementById('itemSelection');
-    let Foxchase = {};
-    let Stonewall = {};
+    let Foxchase = [{}];
+    let Stonewall = [{}];
+    let Warrenton = [{}];
+		let Bristow = [{}];
+		let bj = [{}];
+		let Heritage = [{}];
+		let Eastgate = [{}];
+    let labelTime;
     let result;
 
-    storeSelection.addEventListener('change',(e)=>updateChart(e.target.value, itemSelection.value));
+    storeSelection.addEventListener('change',(e)=>{
+      if (e.target.value !== 'allStores') {
+        oneStore(e.target.value, itemSelection.value);
+        createChart(labelTime, eval(e.target.value));
+      }else {
+        allStores(e.target, itemSelection.value);
+      }
+    });
     itemSelection.addEventListener('change',(e)=>updateChart(storeSelection.value, e.target.value));
 
-    updateChart('Foxchase', 'beverages');
+    //on load
+    allStores(storeSelection,'beverages');
 
-
-    function updateChart(value, item) {
+    function oneStore(store, item) {
       let xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
         if (this.readyState==4 && this.status==200) {
-          eval(value).data= JSON.parse(this.responseText)['dataPoints'];
-          eval(value).label = value;
-          eval(value).fill = false;
-          eval(value).borderColor = eval(value.toLowerCase() + 'Color');
+          eval(store)[0].data= JSON.parse(xhttp.responseText)['dataPoints'];
+          eval(store)[0].label = store;
+          eval(store)[0].fill = false;
+          eval(store)[0].borderColor = eval(store.toLowerCase() + 'Color');
+          labelTime=JSON.parse(xhttp.responseText)['labelTime'];
 
-          createChart(JSON.parse(this.responseText)['labelTime'], eval(value));
-
-          result = JSON.parse(this.responseText);
         }
       };
-      xhttp.open('GET', 'xhttp.php?table='+item+'&store='+value, true);
-      xhttp.send();
+      xhttp.open('POST', 'xhttp.php', false);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send('table='+item+'&store='+store);
+    }
 
+    function allStores(stores,item){
+      result = [];
+      for (let i = 1; i < stores.length; i++) {
+        oneStore(stores[i].value,item);
+        result = result.concat( eval(stores[i].value) );
+      }
+      createChart(labelTime, result);
+      emptyVariables();
+
+    }
+
+    function emptyVariables(){
+      Foxchase = [{}];
+      Warrenton = [{}];
+      Stonewall = [{}];
+  		Bristow = [{}];
+  		bj = [{}];
+  		Heritage = [{}];
+  		Eastgate = [{}];
     }
 
 

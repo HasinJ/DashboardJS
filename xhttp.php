@@ -8,9 +8,9 @@
   try {
     $dataPoints = array();
     $labelTime = array();
-    $table = $_GET['table'];
-    $store = $_GET['store'];
-    $sql = "SELECT * FROM $table LIMIT 30";
+    $table = $_POST['table'];
+    $store = $_POST['store'];
+    $sql = "SELECT Date, $store FROM $table LIMIT 30";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 
