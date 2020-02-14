@@ -97,22 +97,26 @@ $graphObj->setLimit(5);
 		let Eastgate = [{}];
     let labelTime;
     let result;
+    let test;
+    let xhttp;
+    let stores = ['Foxchase'];
 
     storeSelection.addEventListener('change',(e)=>{
       if (e.target.value !== 'allStores') {
         oneStore(e.target.value, itemSelection.value);
         createChart(labelTime, eval(e.target.value));
+        emptyVariables();
       }else {
-        allStores(e.target, itemSelection.value);
+        allStores(stores, itemSelection.value);
       }
     });
     itemSelection.addEventListener('change',(e)=>updateChart(storeSelection.value, e.target.value));
 
     //on load
-    allStores(storeSelection,'beverages');
 
     function oneStore(store, item) {
-      let xhttp = new XMLHttpRequest();
+      deleteCanvas();
+      xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
         if (this.readyState==4 && this.status==200) {
           eval(store)[0].data= JSON.parse(xhttp.responseText)['dataPoints'];
@@ -120,23 +124,25 @@ $graphObj->setLimit(5);
           eval(store)[0].fill = false;
           eval(store)[0].borderColor = eval(store.toLowerCase() + 'Color');
           labelTime=JSON.parse(xhttp.responseText)['labelTime'];
+          test = ['Foxchase','Stonewall'];
 
         }
       };
-      xhttp.open('POST', 'xhttp.php', false);
-      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send('table='+item+'&store='+store);
+      xhttp.open('GET', 'onestoreXHTTP.php?table='+item+'&store='+store, false);
+      xhttp.send();
     }
 
-    function allStores(stores,item){
-      result = [];
-      for (let i = 1; i < stores.length; i++) {
-        oneStore(stores[i].value,item);
-        result = result.concat( eval(stores[i].value) );
-      }
-      createChart(labelTime, result);
-      emptyVariables();
-
+    function allStores(stores, item) {
+      deleteCanvas();
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+        if (this.readyState==4 && this.status==200) {
+          result = JSON.parse(xhttp.responseText)['dataPoints'];
+        }
+      };
+      xhttp.open('POST', 'allstoresXHTTP.php', true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send('table='+item+'&stores='+stores);
     }
 
     function emptyVariables(){
