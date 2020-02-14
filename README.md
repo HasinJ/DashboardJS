@@ -8,6 +8,7 @@ second obj:
   1. dropdown menu with graph
     1. one dropdown for the store and all stores
       1. associate points with data, that way points directly connect with date
+      2. running 10 posts isn't good, need to create a seperate php file that grabs all the data and then parses each one into an array and then concat() on JS
     2. one dropdown for the beverages
     3. one date selector thingie (but default today's date)
   2. making a sidebar thingie
