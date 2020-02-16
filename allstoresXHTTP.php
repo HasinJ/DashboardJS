@@ -9,7 +9,7 @@
     $table = $_POST['table'];
     $dataPointsKeys = $_POST['stores'];
     //temp
-    $dataPointsKeys = ['Foxchase','Stonewall'];
+    //$dataPointsKeys = ['Foxchase','Stonewall'];
     $dataPoints = array();
     $dataPoints = array_fill(0, count($dataPointsKeys), array()); //fills with empty arrays for array_combine
     $labelTime = array();
@@ -26,7 +26,7 @@
 
     $row = array(); //empty out row for another for each
 
-    for ($i=0; $i < count($dataPointsKeys); $i++) {
+    for ($i=1; $i < count($dataPointsKeys); $i++) {
       foreach($results as $row)
       {
         array_push($dataPoints[$i], $row[ $dataPointsKeys[$i] ]);
