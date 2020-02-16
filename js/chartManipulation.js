@@ -5,7 +5,7 @@ graphTitle.textContent = 'Graph';
 //edit these to add colors to new stores
 let stonewallColor = 'rgb(255,133,10)';
 let foxchaseColor = 'rgb(255,99,132)';
-let warrentonColor = 'rgb(255,247,8)';
+let warrentonColor = 'rgb(222,222,87)';
 let bristowColor = 'rgb(142,255,13)';
 let bjColor = 'rgb(0,255,255)';
 let heritageColor = 'rgb(118,59,255)';
@@ -22,6 +22,12 @@ function createCanvas() {
   let container = document.getElementById('container');
   ctx.setAttribute('id','myChart');
   container.appendChild(ctx);
+}
+
+function fillSpecifications(storeName){
+  storeList[storeName][0].label = storeName;
+  storeList[storeName][0].fill = false;
+  storeList[storeName][0].borderColor = eval(storeName.toLowerCase() + 'Color');
 }
 
 function createChart(timeSet, lineSpecifications) {
