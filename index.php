@@ -70,13 +70,12 @@ $graphObj->setLimit(5);
 				<option value="Stonewall">Stonewall</option>
         <option value="Warrenton">Warrenton</option>
         <option value="Bristow">Bristow</option>
-        <option value="bj">BJ</option>
+        <option value="BJ">BJ</option>
         <option value="Heritage">Heritage</option>
         <option value="Eastgate">Eastgate</option>
 			</select>
 
 			<input type="date" name="dateChart" value="">
-      <canvas id="myChart"></canvas>
     </div>
 
     <!-- Optional JavaScript -->
@@ -88,71 +87,85 @@ $graphObj->setLimit(5);
 
     const storeSelection = document.getElementById('storeSelection');
     const itemSelection = document.getElementById('itemSelection');
-    let Foxchase = [{}];
-    let Stonewall = [{}];
-    let Warrenton = [{}];
-		let Bristow = [{}];
-		let bj = [{}];
-		let Heritage = [{}];
-		let Eastgate = [{}];
-    let labelTime;
-    let result;
-    let test;
-    let xhttp;
-    let stores = ['Foxchase'];
 
-    storeSelection.addEventListener('change',(e)=>{
-      if (e.target.value !== 'allStores') {
-        oneStore(e.target.value, itemSelection.value);
-        createChart(labelTime, eval(e.target.value));
-        emptyVariables();
+    let labelTime, request, result, xhttp, storeList;
+
+    //HTTPrequest SPECIFIC string creation
+    let POSTlist = new Array();
+    for (let i = 1; i < storeSelection.length; i++) {
+      POSTlist[i] = 'stores[]=' + encodeURIComponent(storeSelection[i].value);
+    }
+    POSTlist = POSTlist.join('&');
+
+
+    storeSelection.addEventListener('change',storeListener);
+    itemSelection.addEventListener('change',storeListener);
+
+    function storeListener(){
+      if (storeSelection.value !== 'allStores') {
+        oneStore(storeSelection.value, itemSelection.value);
       }else {
-        allStores(stores, itemSelection.value);
+        allStores(POSTlist, itemSelection.value);
       }
-    });
-    itemSelection.addEventListener('change',(e)=>updateChart(storeSelection.value, e.target.value));
+    }
 
     //on load
+    emptyVariables();
+    allStores(POSTlist, 'beverages');
+    storeSelection.value = 'allStores';
+    itemSelection.value = 'beverages';
 
     function oneStore(store, item) {
       deleteCanvas();
       xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
         if (this.readyState==4 && this.status==200) {
-          eval(store)[0].data= JSON.parse(xhttp.responseText)['dataPoints'];
-          eval(store)[0].label = store;
-          eval(store)[0].fill = false;
-          eval(store)[0].borderColor = eval(store.toLowerCase() + 'Color');
+          storeList[store][0].data= JSON.parse(xhttp.responseText)['dataPoints'];
+          fillSpecifications(store);
           labelTime=JSON.parse(xhttp.responseText)['labelTime'];
-          test = ['Foxchase','Stonewall'];
 
+          createChart(labelTime, storeList[store]);
+          emptyVariables();
         }
       };
-      xhttp.open('GET', 'onestoreXHTTP.php?table='+item+'&store='+store, false);
-      xhttp.send();
+      xhttp.open('POST', 'onestoreXHTTP.php', true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send('table='+item+'&store='+store);
     }
 
     function allStores(stores, item) {
       deleteCanvas();
       xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function(){
+      xhttp.onreadystatechange = function() {
         if (this.readyState==4 && this.status==200) {
-          result = JSON.parse(xhttp.responseText)['dataPoints'];
+          request = JSON.parse(xhttp.responseText)['dataPoints'];
+          labelTime = JSON.parse(xhttp.responseText)['labelTime'];
+          for (let property in storeList) {
+            storeList[property][0].data = request[property];
+            fillSpecifications(property);
+            result = result.concat(storeList[property]);
+          }
+          createChart(labelTime,result);
+          emptyVariables();
         }
       };
       xhttp.open('POST', 'allstoresXHTTP.php', true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send('table='+item+'&stores='+stores);
+      xhttp.send('table='+item+'&stores[]='+stores);
     }
 
+    //after creating a column in database, add to this in order to include a new store (also need to edit colors)
     function emptyVariables(){
-      Foxchase = [{}];
-      Warrenton = [{}];
-      Stonewall = [{}];
-  		Bristow = [{}];
-  		bj = [{}];
-  		Heritage = [{}];
-  		Eastgate = [{}];
+      storeList = {
+        'Foxchase': [{}]
+        , 'Stonewall' : [{}]
+        , 'Warrenton' : [{}]
+        , 'Bristow' : [{}]
+        , 'BJ' : [{}]
+        , 'Heritage' : [{}]
+        , 'Eastgate' : [{}]
+      };
+      result = [];
     }
 
 
