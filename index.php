@@ -2,7 +2,7 @@
 
 <?php
 require('code.php');
-$graphObj->setTable('beverages');
+$graphObj->setLimit(5);
 ?>
 
 <!DOCTYPE html>
@@ -53,10 +53,11 @@ $graphObj->setTable('beverages');
 
 		</div>
 
+
     <div id="container" class="col-md-10 offset-md-1" align='center'>
       <h1 align="center" class="graphTitle"></h1>
 
-			<select id="items">
+			<select id="itemSelection">
 				<option value="beverages">Beverages</option>
 				<option value="donuts">Donuts</option>
 				<option value="bagels">Bagels</option>
@@ -68,13 +69,12 @@ $graphObj->setTable('beverages');
 				<option value="Stonewall">Stonewall</option>
         <option value="Warrenton">Warrenton</option>
         <option value="Bristow">Bristow</option>
-        <option value="bj">BJ</option>
+        <option value="BJ">BJ</option>
         <option value="Heritage">Heritage</option>
         <option value="Eastgate">Eastgate</option>
 			</select>
 
 			<input type="date" name="dateChart" value="">
-      <canvas id="myChart"></canvas>
     </div>
 
     <!-- Optional JavaScript -->
@@ -84,69 +84,90 @@ $graphObj->setTable('beverages');
 
     <script>
 
+    const storeSelection = document.getElementById('storeSelection');
+    const itemSelection = document.getElementById('itemSelection');
 
-		//edit these to add new stores
-    let Foxchase = [{
-			data: <?php $graphObj->fillLine('Foxchase'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
+    let labelTime, request, result, xhttp, storeList;
 
-		let Stonewall = [{
-			data: <?php $graphObj->fillLine('Stonewall'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-		let Warrenton = [{
-			data: <?php $graphObj->fillLine('Warrenton'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-		let Bristow = [{
-			data: <?php $graphObj->fillLine('Bristow'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-		let bj = [{
-			data: <?php $graphObj->fillLine('BJ'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-		let Heritage = [{
-			data: <?php $graphObj->fillLine('Heritage'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-		let Eastgate = [{
-			data: <?php $graphObj->fillLine('Eastgate'); echo json_encode($graphObj->getDatapoints(), JSON_NUMERIC_CHECK); ?>}];
-
-
-		let Stores = {'Foxchase': Foxchase, 'Stonewall': Stonewall, 'Warrenton': Warrenton, 'Bristow': Bristow, 'bj': bj, 'Heritage': Heritage, 'Eastgate': Eastgate};
-
-    <?php $graphObj->setTable('bagels'); ?>
-
-
-
-		const storeSelection = document.getElementById('storeSelection');
-
-		createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection,Stores));
-		storeSelection.addEventListener('change',changeLines);
-
-		function changeLines() {
-			deleteCanvas();
-			if (storeSelection.value == 'allStores')
-			{	createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, allStores(storeSelection, Stores));}
-			else {
-				chart(storeSelection.value, Stores);
-				createChart(<?php echo json_encode($graphObj->getLabelTime(), JSON_NUMERIC_CHECK); ?>, eval(storeSelection.value));
-			}
-		}
-
-    const itemSelection = document.getElementById('items');
-    itemSelection.addEventListener('change',changeTable);
-
-
-    function changeTable(){
-      switch (itemSelection.value) {
-        case 'donuts':
-          <?php $graphObj->setTable('donuts');?>
-          break;
-        case 'beverages':
-          <?php $graphObj->setTable('beverages');?>
-          break;
-        case 'bagels':
-          <?php $graphObj->setTable('bagels');?>
-          break;
-      }
-      changeLines();
+    //HTTPrequest SPECIFIC string creation
+    let POSTlist = new Array();
+    for (let i = 1; i < storeSelection.length; i++) {
+      POSTlist[i] = 'stores[]=' + encodeURIComponent(storeSelection[i].value);
     }
+    POSTlist = POSTlist.join('&');
+
+
+    storeSelection.addEventListener('change',storeListener);
+    itemSelection.addEventListener('change',storeListener);
+
+    function storeListener(){
+      if (storeSelection.value !== 'allStores') {
+        oneStore(storeSelection.value, itemSelection.value);
+      }else {
+        allStores(POSTlist, itemSelection.value);
+      }
+    }
+
+    //on load
+    emptyVariables();
+    allStores(POSTlist, 'beverages');
+    storeSelection.value = 'allStores';
+    itemSelection.value = 'beverages';
+
+    function oneStore(store, item) {
+      deleteCanvas();
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+        if (this.readyState==4 && this.status==200) {
+          storeList[store][0].data= JSON.parse(xhttp.responseText)['dataPoints'];
+          fillSpecifications(store);
+          labelTime=JSON.parse(xhttp.responseText)['labelTime'];
+
+          createChart(labelTime, storeList[store]);
+          emptyVariables();
+        }
+      };
+      xhttp.open('POST', 'onestoreXHTTP.php', true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send('table='+item+'&store='+store);
+    }
+
+    function allStores(stores, item) {
+      deleteCanvas();
+      xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState==4 && this.status==200) {
+          request = JSON.parse(xhttp.responseText)['dataPoints'];
+          labelTime = JSON.parse(xhttp.responseText)['labelTime'];
+          for (let property in storeList) {
+            storeList[property][0].data = request[property];
+            fillSpecifications(property);
+            result = result.concat(storeList[property]);
+          }
+          createChart(labelTime,result);
+          emptyVariables();
+        }
+      };
+      xhttp.open('POST', 'allstoresXHTTP.php', true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send('table='+item+'&stores[]='+stores);
+    }
+
+    //after creating a column in database, add to this in order to include a new store (also need to edit colors)
+    function emptyVariables(){
+      storeList = {
+        'Foxchase': [{}]
+        , 'Stonewall' : [{}]
+        , 'Warrenton' : [{}]
+        , 'Bristow' : [{}]
+        , 'BJ' : [{}]
+        , 'Heritage' : [{}]
+        , 'Eastgate' : [{}]
+      };
+      result = [];
+    }
+
+
 
     </script>
 

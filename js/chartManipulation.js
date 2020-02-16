@@ -5,7 +5,7 @@ graphTitle.textContent = 'Graph';
 //edit these to add colors to new stores
 let stonewallColor = 'rgb(255,133,10)';
 let foxchaseColor = 'rgb(255,99,132)';
-let warrentonColor = 'rgb(255,247,8)';
+let warrentonColor = 'rgb(222,222,87)';
 let bristowColor = 'rgb(142,255,13)';
 let bjColor = 'rgb(0,255,255)';
 let heritageColor = 'rgb(118,59,255)';
@@ -24,9 +24,14 @@ function createCanvas() {
   container.appendChild(ctx);
 }
 
-function createChart(x, set) {
-  let ctx = document.getElementById('myChart');
+function fillSpecifications(storeName){
+  storeList[storeName][0].label = storeName;
+  storeList[storeName][0].fill = false;
+  storeList[storeName][0].borderColor = eval(storeName.toLowerCase() + 'Color');
+}
 
+function createChart(timeSet, lineSpecifications) {
+  let ctx = document.getElementById('myChart');
   if (ctx==null) {
     createCanvas();
     ctx = document.getElementById('myChart').getContext('2d');
@@ -39,26 +44,11 @@ function createChart(x, set) {
 
   // The data for our dataset
   data: {
-      labels: x,
-      datasets: set
+      labels: timeSet,
+      datasets: lineSpecifications
   },
 
   // Configuration options go here
   options: {}
 });
-}
-
-function chart(targetValue, storesObject){
-  storesObject[targetValue][0].label = targetValue;
-  storesObject[targetValue][0].fill = false;
-  storesObject[targetValue][0].borderColor = eval(targetValue.toLowerCase() + 'Color');
-}
-
-function allStores(targetArray, storesObject) {
-  let result = [];
-    for (var i = 1; i < targetArray.length; i++) {
-      chart(targetArray[i].value, storesObject);
-      result = result.concat(eval(targetArray[i].value));
-    }
-  return result;
 }
