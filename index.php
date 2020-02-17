@@ -74,7 +74,21 @@ $graphObj->setLimit(5);
         <option value="Eastgate">Eastgate</option>
 			</select>
 
-			<input type="date" name="dateChart" value="">
+    </div>
+
+    <div id="dateContainers" align='center' style="margin-bottom: 20px;">
+
+      <select id="dateSelection">
+        <option value=30>Last 30 Days</option>
+        <option value=60>Last 60 Days</option>
+        <option value="custom">Custom..</option>
+      </select><br>
+
+      <div style="margin-top:10px;">
+        <label id="from" hidden>To: <input type="date"></label>
+        <label id="to" hidden> From: <input type="date"></label>
+      </div>
+
     </div>
 
     <!-- Optional JavaScript -->
@@ -86,8 +100,13 @@ $graphObj->setLimit(5);
 
     const storeSelection = document.getElementById('storeSelection');
     const itemSelection = document.getElementById('itemSelection');
+    const dateSelection = document.getElementById('dateSelection');
+    const fromDate = document.getElementById('from');
+    const toDate = document.getElementById('to');
 
-    let labelTime, request, result, xhttp, storeList;
+
+    let labelTime, request, result, xhttp, storeList, limit=30;
+
 
     //HTTPrequest SPECIFIC string creation
     let POSTlist = new Array();
@@ -96,25 +115,37 @@ $graphObj->setLimit(5);
     }
     POSTlist = POSTlist.join('&');
 
-
     storeSelection.addEventListener('change',storeListener);
     itemSelection.addEventListener('change',storeListener);
+    dateSelection.addEventListener('change',changeLimit);
+
+    function changeLimit(event) {
+      if (event.target.value == 'custom') {
+        fromDate.removeAttribute('hidden');
+        toDate.removeAttribute('hidden');
+      } else {
+        limit = event.target.value;
+        storeListener();
+      }
+
+    }
 
     function storeListener(){
       if (storeSelection.value !== 'allStores') {
-        oneStore(storeSelection.value, itemSelection.value);
+        oneStore(storeSelection.value, itemSelection.value, limit);
       }else {
-        allStores(POSTlist, itemSelection.value);
+        allStores(POSTlist, itemSelection.value, limit);
       }
     }
 
-    //on load
+    //on load/default
     emptyVariables();
-    allStores(POSTlist, 'beverages');
+    allStores(POSTlist, 'beverages', limit);
     storeSelection.value = 'allStores';
     itemSelection.value = 'beverages';
+    dateSelection.value = '30';
 
-    function oneStore(store, item) {
+    function oneStore(store, item, limit) {
       deleteCanvas();
       xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function(){
@@ -129,10 +160,10 @@ $graphObj->setLimit(5);
       };
       xhttp.open('POST', 'onestoreXHTTP.php', true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send('table='+item+'&store='+store);
+      xhttp.send('table='+item+'&store='+store+'&limit='+limit);
     }
 
-    function allStores(stores, item) {
+    function allStores(stores, item, limit) {
       deleteCanvas();
       xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
@@ -150,7 +181,7 @@ $graphObj->setLimit(5);
       };
       xhttp.open('POST', 'allstoresXHTTP.php', true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send('table='+item+'&stores[]='+stores);
+      xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit);
     }
 
     //after creating a column in database, add to this in order to include a new store (also need to edit colors)
