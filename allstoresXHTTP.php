@@ -6,6 +6,7 @@
   //$pdo = $connection->connectRDS();
 
   try {
+    $limit = $_POST['limit'];
     $table = $_POST['table'];
     $dataPointsKeys = $_POST['stores'];
     //temp
@@ -13,7 +14,9 @@
     $dataPoints = array();
     $dataPoints = array_fill(0, count($dataPointsKeys), array()); //fills with empty arrays for array_combine
     $labelTime = array();
-    $sql = "SELECT * FROM $table LIMIT 30";
+
+    //date because it differs too much from collecting all data
+    $sql = "SELECT CAST(Date AS date) AS Date FROM $table LIMIT $limit";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $results = array();
@@ -24,7 +27,12 @@
       array_push($labelTime, $row['Date']);
     }
 
-    $row = array(); //empty out row for another for each
+    //dataPoints
+    $sql = "SELECT * FROM $table LIMIT $limit";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $results = array();
+    $results = $stmt->fetchALL(PDO::FETCH_ASSOC);
 
     for ($i=1; $i < count($dataPointsKeys); $i++) {
       foreach($results as $row)
