@@ -13,7 +13,6 @@ let eastgateColor = 'rgb(255,153,255)';
 
 function deleteCanvas(){
   let ctx = document.getElementById('myChart');
-  let container = document.getElementById('container');
   if (ctx !== null) ctx.parentNode.removeChild(ctx);
 }
 
