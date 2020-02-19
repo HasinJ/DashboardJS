@@ -8,6 +8,7 @@
   try {
     $limit = $_POST['limit'];
     $table = $_POST['table'];
+    $customDate = $_POST['customDate'];
     $dataPointsKeys = $_POST['stores'];
     //temp
     //$dataPointsKeys = ['Foxchase','Stonewall'];
@@ -16,11 +17,20 @@
     $labelTime = array();
 
     //date because it differs too much from collecting all data
-    $sql = "SELECT CAST(Date AS date) AS Date FROM $table LIMIT $limit";
+    if ($customDate=='custom') {
+      $from = $_POST['from'];
+      $to = $_POST['to'];
+      //order desc in order to grab the correct 30/60 days and not the first 30/60 data entries
+      $sql = "SELECT CAST(Date AS date) AS Date FROM $table WHERE Date > '$from' AND Date < '$to' ORDER BY Date DESC LIMIT 730";
+    }else {
+      $sql = "SELECT CAST(Date AS date) AS Date FROM $table ORDER BY Date DESC LIMIT $limit";
+    }
+
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $results = array();
     $results = $stmt->fetchALL(PDO::FETCH_ASSOC);
+    $results = array_reverse($results);
 
     foreach($results as $row)
     {
@@ -28,11 +38,17 @@
     }
 
     //dataPoints
-    $sql = "SELECT * FROM $table LIMIT $limit";
+    if ($customDate=='custom') {
+      //order desc in order to grab the correct 30/60 days and not the first 30/60 data entries
+      $sql = "SELECT * FROM $table WHERE Date > '$from' AND Date < '$to' ORDER BY Date DESC LIMIT 730";
+    }else {
+      $sql = "SELECT * FROM $table ORDER BY Date DESC LIMIT $limit";
+    }
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $results = array();
     $results = $stmt->fetchALL(PDO::FETCH_ASSOC);
+    $results = array_reverse($results);
 
     for ($i=1; $i < count($dataPointsKeys); $i++) {
       foreach($results as $row)
@@ -42,6 +58,7 @@
     }
 
     $dataPoints = array_combine($dataPointsKeys, $dataPoints); //label data
+
 
     $timeANDpoints = array('dataPoints'=>$dataPoints,'labelTime'=>$labelTime);
     echo json_encode($timeANDpoints);

@@ -85,8 +85,9 @@ $graphObj->setLimit(5);
       </select><br>
 
       <div style="margin-top:10px;">
-        <label id="from" hidden>To: <input type="date"></label>
-        <label id="to" hidden> From: <input type="date"></label>
+        <label id="from" hidden>From: <input type="date"></label>
+        <label id="to" hidden> To: <input type="date"></label>
+        <input id="submitDates" type="submit" value="Submit Dates" hidden>
       </div>
 
     </div>
@@ -103,12 +104,13 @@ $graphObj->setLimit(5);
     const dateSelection = document.getElementById('dateSelection');
     const fromDate = document.getElementById('from');
     const toDate = document.getElementById('to');
+    const submitDates = document.getElementById('submitDates');
 
 
     let labelTime, request, result, xhttp, storeList, limit=30;
 
 
-    //HTTPrequest SPECIFIC string creation
+    //HTTPRequest SPECIFIC string creation
     let POSTlist = new Array();
     for (let i = 1; i < storeSelection.length; i++) {
       POSTlist[i] = 'stores[]=' + encodeURIComponent(storeSelection[i].value);
@@ -118,16 +120,21 @@ $graphObj->setLimit(5);
     storeSelection.addEventListener('change',storeListener);
     itemSelection.addEventListener('change',storeListener);
     dateSelection.addEventListener('change',changeLimit);
+    submitDates.addEventListener('click', storeListener);
 
     function changeLimit(event) {
       if (event.target.value == 'custom') {
         fromDate.removeAttribute('hidden');
         toDate.removeAttribute('hidden');
+        submitDates.removeAttribute('hidden');
+
       } else {
         limit = event.target.value;
         storeListener();
+        fromDate.setAttribute('hidden', true);
+        toDate.setAttribute('hidden', true);
+        submitDates.setAttribute('hidden',true);
       }
-
     }
 
     function storeListener(){
@@ -137,6 +144,8 @@ $graphObj->setLimit(5);
         allStores(POSTlist, itemSelection.value, limit);
       }
     }
+
+
 
     //on load/default
     emptyVariables();
@@ -158,9 +167,16 @@ $graphObj->setLimit(5);
           emptyVariables();
         }
       };
-      xhttp.open('POST', 'onestoreXHTTP.php', true);
-      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send('table='+item+'&store='+store+'&limit='+limit);
+
+      if (dateSelection.value=='custom') {
+        xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit
+        +'&from='+fromDate.firstElementChild.value
+        +'&to='+toDate.firstElementChild.value
+        +'&customDate'+dateSelection.value);
+      } else {
+        xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit);
+      }
+
     }
 
     function allStores(stores, item, limit) {
@@ -181,7 +197,12 @@ $graphObj->setLimit(5);
       };
       xhttp.open('POST', 'allstoresXHTTP.php', true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit);
+
+      if (dateSelection.value == 'custom') {
+        xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit+'&from='+fromDate.firstElementChild.value+'&to='+toDate.firstElementChild.value+'&customDate='+dateSelection.value);
+      } else {
+        xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit+'&customDate='+dateSelection.value);
+      }
     }
 
     //after creating a column in database, add to this in order to include a new store (also need to edit colors)
