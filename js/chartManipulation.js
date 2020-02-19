@@ -3,7 +3,7 @@ let graphTitle = document.querySelector('.graphTitle');
 graphTitle.textContent = 'Graph';
 
 //edit these to add colors to new stores
-let stonewallColor = 'rgb(255,133,10)';
+let stonewallColor = 'rgb(153, 102, 51)';
 let foxchaseColor = 'rgb(255,99,132)';
 let warrentonColor = 'rgb(222,222,87)';
 let bristowColor = 'rgb(142,255,13)';
