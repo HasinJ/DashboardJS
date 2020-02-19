@@ -169,12 +169,9 @@ $graphObj->setLimit(5);
       };
 
       if (dateSelection.value=='custom') {
-        xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit
-        +'&from='+fromDate.firstElementChild.value
-        +'&to='+toDate.firstElementChild.value
-        +'&customDate'+dateSelection.value);
+        xhttp.send('table='+item+'&store='+store+'&limit='+limit+'&from='+fromDate.firstElementChild.value+'&to='+toDate.firstElementChild.value+'&customDate'+dateSelection.value);
       } else {
-        xhttp.send('table='+item+'&stores[]='+stores+'&limit='+limit);
+        xhttp.send('table='+item+'&store='+store+'&limit='+limit+'&customDate'+dateSelection.value);
       }
 
     }
