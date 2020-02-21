@@ -11,12 +11,20 @@
     $limit = $_POST['limit']
     $table = $_POST['table'];
     $store = $_POST['store'];
-    $sql = "SELECT CAST(Date AS date) AS Date, $store FROM $table LIMIT $limit";
+    $customDate = $_POST['customDate'];
+    if ($customDate = 'custom') {
+      $from = $_POST['from'];
+      $to = $_POST['to'];
+      $sql = "SELECT CAST(Date AS date) AS Date, $store FROM $table WHERE Date > '$from' AND Date < '$to' ORDER BY Date DESC LIMIT 730";
+    }else {
+      $sql = "SELECT CAST(Date AS date) AS Date, $store FROM $table ORDER BY Date DESC LIMIT $limit";
+    }
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
 
     $results = array();
     $results = $stmt->fetchALL(PDO::FETCH_ASSOC);
+    $results = array_reverse($results);
 
     foreach($results as $row)
     {
