@@ -2,7 +2,6 @@
 
 <?php
 require('code.php');
-$graphObj->setLimit(5);
 ?>
 
 <!DOCTYPE html>
@@ -167,11 +166,13 @@ $graphObj->setLimit(5);
           emptyVariables();
         }
       };
-
+	  xhttp.open('POST', 'onestoreXHTTP.php', true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	  
       if (dateSelection.value=='custom') {
-        xhttp.send('table='+item+'&store='+store+'&limit='+limit+'&from='+fromDate.firstElementChild.value+'&to='+toDate.firstElementChild.value+'&customDate'+dateSelection.value);
+        xhttp.send('table='+item+'&store='+store+'&limit='+limit+'&from='+fromDate.firstElementChild.value+'&to='+toDate.firstElementChild.value+'&customDate='+dateSelection.value);
       } else {
-        xhttp.send('table='+item+'&store='+store+'&limit='+limit+'&customDate'+dateSelection.value);
+        xhttp.send('table='+item+'&store='+store+'&limit='+limit+'&customDate='+dateSelection.value);
       }
 
     }

@@ -8,11 +8,11 @@
   try {
     $dataPoints = array();
     $labelTime = array();
-    $limit = $_POST['limit']
+    $limit = $_POST['limit'];
     $table = $_POST['table'];
     $store = $_POST['store'];
     $customDate = $_POST['customDate'];
-    if ($customDate = 'custom') {
+    if ($customDate=='custom') {
       $from = $_POST['from'];
       $to = $_POST['to'];
       $sql = "SELECT CAST(Date AS date) AS Date, $store FROM $table WHERE Date > '$from' AND Date < '$to' ORDER BY Date DESC LIMIT 730";

@@ -20,7 +20,7 @@
     if ($customDate=='custom') {
       $from = $_POST['from'];
       $to = $_POST['to'];
-      //order desc in order to grab the correct 30/60 days and not the first 30/60 data entries
+      //order desc in order to grab the LAST 30/60 days and not the FIRST 30/60 data entries
       $sql = "SELECT CAST(Date AS date) AS Date FROM $table WHERE Date > '$from' AND Date < '$to' ORDER BY Date DESC LIMIT 730";
     }else {
       $sql = "SELECT CAST(Date AS date) AS Date FROM $table ORDER BY Date DESC LIMIT $limit";
